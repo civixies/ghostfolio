@@ -129,6 +129,22 @@ We provide official container images hosted on [Docker Hub](https://hub.docker.c
 - Create a local copy of this Git repository (clone)
 - Copy the file `.env.example` to `.env` and populate it with your data (`cp .env.example .env`)
 
+#### Run with external PostgreSQL
+
+If you already have a managed or external PostgreSQL instance, you can run Ghostfolio with Redis only:
+
+```bash
+cp .env.external-db.example .env.external-db
+```
+
+Update `EXTERNAL_POSTGRES_HOST`, `EXTERNAL_POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` and `DATABASE_URL` in `.env.external-db`.
+
+Then start the stack:
+
+```bash
+docker compose -f docker/docker-compose.external-db.yml --env-file .env.external-db up -d
+```
+
 #### a. Run environment
 
 Run the following command to start the Docker images from [Docker Hub](https://hub.docker.com/r/ghostfolio/ghostfolio):
