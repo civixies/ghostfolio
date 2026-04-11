@@ -11,6 +11,9 @@ services:
       - no-new-privileges:true
     env_file:
       - ../.env.external-db
+    environment:
+      EXTERNAL_POSTGRES_HOST: ${EXTERNAL_POSTGRES_HOST}
+      EXTERNAL_POSTGRES_PORT: ${EXTERNAL_POSTGRES_PORT:-5432}
     ports:
       - 3333:3333
     depends_on:
@@ -33,6 +36,9 @@ services:
       - no-new-privileges:true
     env_file:
       - ../.env.external-db
+    environment:
+      EXTERNAL_POSTGRES_HOST: ${EXTERNAL_POSTGRES_HOST}
+      EXTERNAL_POSTGRES_PORT: ${EXTERNAL_POSTGRES_PORT:-5432}
     command:
       - /bin/sh
       - -c

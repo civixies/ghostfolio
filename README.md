@@ -137,6 +137,26 @@ If you already have a managed or external PostgreSQL instance, you can run Ghost
 cp .env.external-db.example .env.external-db
 ```
 
+Create the database and application user from an admin/superuser account:
+
+```sql
+CREATE ROLE services_app_user
+  WITH LOGIN
+  PASSWORD 'CHANGE_ME_STRONG_PASSWORD';
+
+CREATE DATABASE "ghostfolio-db"
+  OWNER services_app_user;
+
+REVOKE ALL ON DATABASE "ghostfolio-db" FROM PUBLIC;
+GRANT CONNECT, TEMP ON DATABASE "ghostfolio-db" TO services_app_user;
+```
+
+If the database already exists:
+
+```sql
+ALTER DATABASE "ghostfolio-db" OWNER TO services_app_user;
+```
+
 Update `EXTERNAL_POSTGRES_HOST`, `EXTERNAL_POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` and `DATABASE_URL` in `.env.external-db`.
 
 Then start the stack:
@@ -144,6 +164,8 @@ Then start the stack:
 ```bash
 docker compose -f docker/docker-compose.external-db.yml --env-file .env.external-db up -d
 ```
+
+Use `--env-file .env.external-db` with this compose file so `${EXTERNAL_POSTGRES_HOST}` and `${EXTERNAL_POSTGRES_PORT}` are resolved correctly.
 
 #### a. Run environment
 
@@ -166,6 +188,21 @@ docker compose -f docker/docker-compose.build.yml up -d
 
 1. Open http://localhost:3333 in your browser
 1. Create a new user via _Get Started_ (this first user will get the role `ADMIN`)
+
+#### Add More Currencies (Beyond USD)
+
+By default, Ghostfolio starts with `USD` only.
+
+1. Sign in with an `ADMIN` account.
+1. Open `Admin` -> `Market Data`.
+1. Click `Add` and switch to `Currency` mode in the dialog.
+1. Enter the ISO-4217 code (e.g. `EUR`, `CHF`, `GBP`) and confirm.
+
+Ghostfolio stores this setting in the database (`CURRENCIES`) and gathers exchange-rate data for the new currency.
+
+Docker restart required: **No** (not required for adding currencies this way).
+
+Docker restart required: **Yes**, only if you change environment variables or Docker Compose files.
 
 #### Upgrade Version
 
