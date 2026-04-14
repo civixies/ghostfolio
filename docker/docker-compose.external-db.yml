@@ -11,41 +11,15 @@ services:
       - no-new-privileges:true
     env_file:
       - ../.env.external-db
-    environment:
-      EXTERNAL_POSTGRES_HOST: ${EXTERNAL_POSTGRES_HOST}
-      EXTERNAL_POSTGRES_PORT: ${EXTERNAL_POSTGRES_PORT:-5432}
+    # environment:
+    #   EXTERNAL_POSTGRES_HOST: ${EXTERNAL_POSTGRES_HOST}
+    #   EXTERNAL_POSTGRES_PORT: ${EXTERNAL_POSTGRES_PORT:-5432}
+    #   REDIS_HOST: ${REDIS_HOST}
+    #   REDIS_PORT: ${REDIS_PORT:-6379}
     ports:
       - 3333:3333
-    depends_on:
-      redis:
-        condition: service_healthy
     healthcheck:
       test: ['CMD-SHELL', 'curl -f http://localhost:3333/api/v1/health']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: docker.io/library/redis:alpine
-    container_name: gf-redis
-    restart: unless-stopped
-    user: '999:1000'
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    env_file:
-      - ../.env.external-db
-    environment:
-      EXTERNAL_POSTGRES_HOST: ${EXTERNAL_POSTGRES_HOST}
-      EXTERNAL_POSTGRES_PORT: ${EXTERNAL_POSTGRES_PORT:-5432}
-    command:
-      - /bin/sh
-      - -c
-      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
-    healthcheck:
-      test:
-        ['CMD-SHELL', 'redis-cli --pass "$${REDIS_PASSWORD}" ping | grep PONG']
       interval: 10s
       timeout: 5s
       retries: 5
